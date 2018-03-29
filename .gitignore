@@ -2,3 +2,4 @@ venv
 temp.png
 .*
 !.gitignore
+key.txt

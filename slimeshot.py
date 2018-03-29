@@ -12,12 +12,15 @@ key = keyFile.read().decode()
 keyFile.close()
 
 
+# Sends 'data' to the clipboard
 def clipboard(data):
     p = subprocess.Popen(['xclip', '-selection', 'clipboard'], stdin=subprocess.PIPE)
     p.stdin.write(data.encode())
     p.stdin.close()
 
 
+# Opens maim and allows the user to make a screenshot
+## Returns whether the screenshot was successful
 def clip():
     maim = subprocess.Popen(["maim", "-s", "temp.png"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = maim.communicate()
@@ -28,7 +31,8 @@ def clip():
     else:
         return False
 
-
+# Sends a POST request to the screenshot server including the screenshot and the key
+## Returns text sent back from the server
 def post():
     with open("temp.png", "rb") as img:
         req = requests.post(url, files={"photo": img}, data={"pass": key})
@@ -36,21 +40,27 @@ def post():
         return req.text
 
 
+# Sends a GNU/Linux notification via 'notify-send'
 def notify(title, text="", icon=""):
     subprocess.Popen(["notify-send", "-i", icon, title, text])
 
 
+# Sends an error notification to the user via 'notify-send'
+def showError(error):
+    notify("Error", error)
+
+
 message = ""
-cancelled = False
+error = ""
 
 if clip():
     message = post()
 else:
-    cancelled = True
+    showError("Error" , "Failed to clip the specified region!")
 
-if message != "":
+if message != "You fucked up.":
     clipboard(message)
     notify("Screenshot successful!", message, thisDir + "/temp.png")
     playsound("success.mp3")
-elif not cancelled:
-    notify("It fucked up.", message)
+else:
+    showError("Server failed to upload the screenshot.")
