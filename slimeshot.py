@@ -8,7 +8,7 @@ thisDir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(thisDir)
 
 keyFile = open("key.txt", "rb")
-key = keyFile.read().decode()
+key = keyFile.read().decode().replace("\n","")
 keyFile.close()
 
 
@@ -48,7 +48,6 @@ def notify(title, text="", icon=""):
 # Sends an error notification to the user via 'notify-send'
 def showError(error):
     notify("Error", error)
-
 
 message = ""
 error = ""
