@@ -60,6 +60,6 @@ else:
 if message != "You fucked up.":
     clipboard(message)
     notify("Screenshot successful!", message, thisDir + "/temp.png")
-    playsound("success.mp3")
+    playsound("success.wav")
 else:
     showError("Server failed to upload the screenshot.")
