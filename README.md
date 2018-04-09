@@ -12,12 +12,13 @@ This file must include only one line, which is a valid key
 for the [slimecorp.biz/i](http://slimecorp.biz/i) platform to function correctly.
 
 
-## Depends on:
+## Depends on
 
 ### Packages
 -   python3
 -   xclip
 -   maim
+-   pip (to install Python libs)
 
 ### Python Libs
 -   request
