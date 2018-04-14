@@ -95,4 +95,3 @@ if message != "You fucked up." and message != "":   # Server returns successful 
         playsound("success.wav")
 else:   # Server denies screenshot, show error
     showError("Server failed to upload the screenshot.")
-    sys.exit(1)
