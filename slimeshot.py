@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 import subprocess
 import requests
@@ -46,6 +46,7 @@ def clipboard(data):
 ## Returns whether the screenshot was successful
 def clip():
     maim = subprocess.Popen(["maim", "-s", "temp.png"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    maim.wait()
     out, err = maim.communicate()
     err = err.decode()
     if err == "":
