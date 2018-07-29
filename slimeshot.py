@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 import subprocess
 import requests
@@ -8,6 +8,7 @@ from playsound import playsound
 import os
 import sys
 import argparse
+import json
 
 URL = 'http://slimecorp.biz/i/pics.php'
 
@@ -31,7 +32,7 @@ def notify(title, text="", icon=""):
 
 # Sends an error notification to the user via 'notify-send'
 def showError(error):
-    notify("Error", error)
+    notify("Slimeshot Error!", error)
     sys.exit(1)
 
 
@@ -88,11 +89,12 @@ if clip():
         message = post()
     else:
         message = "DRY RUN"
+response = json.loads(message)
 
-if message != "You fucked up." and message != "":   # Server returns successful status
-    clipboard(message)
-    notify("Screenshot successful!", message, thisDir + "/temp.png")
+if response["status"] == 0:   # Server returns successful status
+    clipboard(response["url"])
+    notify("Screenshot successful!", response["url"], thisDir + "/temp.png")
     if not args.silent:
         playsound("success.wav")
 else:   # Server denies screenshot, show error
-    showError("Server failed to upload the screenshot.")
+    showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
