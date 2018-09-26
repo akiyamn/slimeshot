@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-__version__ = "0.3.0"
+__version__ = "0.4-beta2"
 
 import subprocess
 import requests
@@ -10,7 +10,7 @@ import sys
 import argparse
 import json
 
-URL = 'http://slimecorp.biz/i/pics.php'
+URL = 'https://slimecorp.biz/i/pics.php'
 
 # Argument Parsing
 parser = argparse.ArgumentParser(description="A simple Python-based screenshot program for slimecorp.biz/i.")
@@ -25,14 +25,17 @@ if args.quiet:
 
 
 # Sends a GNU/Linux notification via 'notify-send'
-def notify(title, text="", icon=""):
+def notify(title, text="", icon="", error=False):
     if not args.quiet:
         subprocess.Popen(["notify-send", "-i", icon, title, text])
+        if not error:
+            print("[NOTIFY]\t" + title + " - " + text)
 
 
 # Sends an error notification to the user via 'notify-send'
-def showError(error):
-    notify("Slimeshot Error!", error)
+def showError(message):
+    notify("Slimeshot Error!", message, error=True)
+    print("[ERROR]\t" + message)
     sys.exit(1)
 
 
@@ -65,7 +68,7 @@ def post():
     with open("temp.png", "rb") as img:
         req = requests.post(URL, files={"photo": img}, data={"pass": key})
         img.close()
-        return req.text
+        return req
 
 
 thisDir = os.path.dirname(os.path.realpath(__file__))
@@ -83,18 +86,29 @@ else:   # Display error and create new file if key.txt doesn't exist
 
 
 message = ""
+httpstat = 0
 
 if clip():
     if not args.dryrun:
-        message = post()
+        req = post()
+        message = req.text
+        httpstat = req.status_code
     else:
         message = "DRY RUN"
-response = json.loads(message)
 
-if response["status"] == 0:   # Server returns successful status
-    clipboard(response["url"])
-    notify("Screenshot successful!", response["url"], thisDir + "/temp.png")
-    if not args.silent:
-        playsound("success.wav")
-else:   # Server denies screenshot, show error
-    showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
+if httpstat == 200:
+    try:
+        response = json.loads(message)
+    except json.decoder.JSONDecodeError:
+        showError("Invalid JSON response was received back:\n" + message)
+
+
+    if response["status"] == 0:   # Server returns successful status
+        clipboard(response["url"])
+        notify("Screenshot successful!", response["url"], thisDir + "/temp.png")
+        if not args.silent:
+            playsound("success.wav")
+    else:   # Server denies screenshot, show error
+        showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
+else:
+    showError("Server Returned HTTP Error Code: " + str(httpstat))
