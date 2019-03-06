@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-__version__ = "0.4-beta2"
+__version__ = "0.4.0"
 
 import subprocess
 import requests
@@ -64,51 +64,66 @@ def clip():
 
 # Sends a POST request to the screenshot server including the screenshot and the key
 ## Returns text sent back from the server
-def post():
+def post(key):
     with open("temp.png", "rb") as img:
         req = requests.post(URL, files={"photo": img}, data={"pass": key})
         img.close()
         return req
 
 
-thisDir = os.path.dirname(os.path.realpath(__file__))
-os.chdir(thisDir)
-if os.path.exists("key.txt"):   # Reads key from key.txt if no errors
-    try:
-        keyFile = open("key.txt", "rb")
-        key = keyFile.read().decode().replace("\n","")
-        keyFile.close()
-    except IOError as e:
-        showError("IOError: " + e)
-else:   # Display error and create new file if key.txt doesn't exist
-    with open("key.txt", "w"): pass
-    showError("Please add a key to your key.txt file!")
+# Reading the key.txt file or prompting the user for one if none found
+def getKey():
+    thisDir = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(thisDir)
+    if os.path.exists("key.txt"):   # Reads key from key.txt if no errors
+        try:
+            keyFile = open("key.txt", "rb")
+            key = keyFile.read().decode().replace("\n","")
+            keyFile.close()
+            return key
+        except IOError as e:
+            showError("IOError: " + e)
+    else:   # Ask the user for a key and create new file if key.txt doesn't exist
+        inputKey = input("A key.txt file was not found, so please enter your key: ")
+        keyFile = open("key.txt", "w")
+        try:
+            keyFile.write(inputKey)
+            print("Key successfully written to key.txt file!")
+            keyFile.close()
+            return inputKey
+        except IOError as e:
+            showError("IOError: " + e)
 
 
-message = ""
-httpstat = 0
+def init():
+    message = ""
+    httpstat = 0
+    thisDir = os.path.dirname(os.path.realpath(__file__))
 
-if clip():
-    if not args.dryrun:
-        req = post()
-        message = req.text
-        httpstat = req.status_code
+    key = getKey()
+    if clip():
+        if not args.dryrun:
+            req = post(key)
+            message = req.text
+            httpstat = req.status_code
+        else:
+            message = "DRY RUN"
+
+    if httpstat == 200:
+        try:
+            response = json.loads(message)
+        except json.decoder.JSONDecodeError:
+            showError("Invalid JSON response was received back:\n" + message)
+
+
+        if response["status"] == 0:   # Server returns successful status
+            clipboard(response["url"])
+            notify("Screenshot successful!", response["url"], thisDir + "/temp.png")
+            if not args.silent:
+                playsound("success.wav")
+        else:   # Server denies screenshot, show error
+            showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
     else:
-        message = "DRY RUN"
+        showError("Server Returned HTTP Error Code: " + str(httpstat))
 
-if httpstat == 200:
-    try:
-        response = json.loads(message)
-    except json.decoder.JSONDecodeError:
-        showError("Invalid JSON response was received back:\n" + message)
-
-
-    if response["status"] == 0:   # Server returns successful status
-        clipboard(response["url"])
-        notify("Screenshot successful!", response["url"], thisDir + "/temp.png")
-        if not args.silent:
-            playsound("success.wav")
-    else:   # Server denies screenshot, show error
-        showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
-else:
-    showError("Server Returned HTTP Error Code: " + str(httpstat))
+init()

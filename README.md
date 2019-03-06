@@ -26,19 +26,23 @@ On the first launch, slimeshot will create a file named `key.txt` if it doesn't 
 -   xclip
 -   python3-pip (to install Python libs)
 
-### Python Libs
+### Python Libraries
 -   request
 -   playsound
 
 
 ## Installation
 
+First, you can download this repository via git's `clone` command as follows:
+
+`https://github.com/akiyamn/slimeshot.git`
+
 All packages shown above can be installed using the package manager relevent to your distro.
 On Debain based systems this would be achieved by running:
 
 `sudo apt-get install python3 maim xclip python3-pip`
 
-Every "python lib" listed must be installed using pip. This can be done by running:
+Every Python library listed must be installed using pip. This can be done by running:
 
 `pip3 install request playsound`
 
