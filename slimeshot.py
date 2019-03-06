@@ -24,6 +24,7 @@ args = parser.parse_args()
 if args.quiet:
     args.silent = True
 
+
 # Prompts the user with a yes or no prompt (y/N) with 'no' being default
 ## Returns true if the input was 'yes' (y)
 def promptYesOrNo(prompt):
@@ -101,18 +102,20 @@ def getKey():
         except IOError as e:
             showError("IOError: " + e)
 
-
+# Main body of the program
 def init():
     message = ""
     httpstat = 0
     thisDir = os.path.dirname(os.path.realpath(__file__))
 
+    # Key reset (-r)
     if args.reset and os.path.exists("key.txt"):
         if promptYesOrNo("Do you really want to reset your key?"):
             os.remove("key.txt")
         else:
             print("Key was not deleted.")
 
+    # Get key and send the request off to servers
     key = getKey()
     if clip():
         if not args.dryrun:
@@ -122,6 +125,7 @@ def init():
         else:
             message = "DRY RUN"
 
+    # If a valid HTTP response is returned (200)
     if httpstat == 200:
         try:
             response = json.loads(message)
@@ -134,8 +138,10 @@ def init():
             notify("Screenshot successful!", response["url"], thisDir + "/temp.png")
             if not args.silent:
                 playsound("success.wav")
-        else:   # Server denies screenshot, show error
+        # Server denies screenshot, show error
+        else:
             showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
+    # If an error HTTP is returned
     else:
         showError("Server Returned HTTP Error Code: " + str(httpstat))
 
