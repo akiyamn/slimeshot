@@ -16,12 +16,19 @@ URL = 'https://slimecorp.biz/i/pics.php'
 parser = argparse.ArgumentParser(description="A simple Python-based screenshot program for slimecorp.biz/i.")
 parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
 parser.add_argument("-q", "--quiet", help="mutes all sound, text and notification output", action='store_true')
+parser.add_argument("-r", "--reset", help="resets the key stored in key.txt to be empty", action='store_true')
 parser.add_argument("--dryrun", help="takes a screenshot without uploading it", action='store_true')
 parser.add_argument("--silent", help="disables audio output", action='store_true')
 args = parser.parse_args()
 
 if args.quiet:
     args.silent = True
+
+# Prompts the user with a yes or no prompt (y/N) with 'no' being default
+## Returns true if the input was 'yes' (y)
+def promptYesOrNo(prompt):
+    choice = input(prompt + " [y/N]: ")[0].capitalize()
+    return choice == "Y"
 
 
 # Sends a GNU/Linux notification via 'notify-send'
@@ -99,6 +106,12 @@ def init():
     message = ""
     httpstat = 0
     thisDir = os.path.dirname(os.path.realpath(__file__))
+
+    if args.reset and os.path.exists("key.txt"):
+        if promptYesOrNo("Do you really want to reset your key?"):
+            os.remove("key.txt")
+        else:
+            print("Key was not deleted.")
 
     key = getKey()
     if clip():
