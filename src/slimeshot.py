@@ -11,6 +11,9 @@ import argparse
 import json
 
 URL = 'https://slimecorp.biz/i/pics.php'
+KEY_PATH = "../key.txt"
+SOUND_PATH = "../assets/success.wav"
+IMG_PATH = "../assets/temp.png"
 
 # Argument Parsing
 parser = argparse.ArgumentParser(description="A simple Python-based screenshot program for slimecorp.biz/i.")
@@ -54,7 +57,7 @@ class Slimeshot:
     # Opens maim and allows the user to make a screenshot
     ## Returns whether the screenshot was successful
     def clip(self):
-        maim = subprocess.Popen(["maim", "-s", "temp.png"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        maim = subprocess.Popen(["maim", "-s", IMG_PATH], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         maim.wait()
         out, err = maim.communicate()
         err = err.decode()
@@ -69,7 +72,7 @@ class Slimeshot:
     # Sends a POST request to the screenshot server including the screenshot and the key
     ## Returns text sent back from the server
     def post(self, key):
-        with open("temp.png", "rb") as img:
+        with open(IMG_PATH, "rb") as img:
             req = requests.post(URL, files={"photo": img}, data={"pass": key})
             img.close()
             return req
@@ -78,9 +81,9 @@ class Slimeshot:
     def getKey(self):
         thisDir = os.path.dirname(os.path.realpath(__file__))
         os.chdir(thisDir)
-        if os.path.exists("key.txt"):  # Reads key from key.txt if no errors
+        if os.path.exists(KEY_PATH):  # Reads key from key.txt if no errors
             try:
-                keyFile = open("key.txt", "rb")
+                keyFile = open(KEY_PATH, "rb")
                 key = keyFile.read().decode().replace("\n", "")
                 keyFile.close()
                 return key
@@ -88,7 +91,7 @@ class Slimeshot:
                 self.showError("IOError: " + e)
         else:  # Ask the user for a key and create new file if key.txt doesn't exist
             inputKey = input("A key.txt file was not found, so please enter your key: ")
-            keyFile = open("key.txt", "w")
+            keyFile = open(KEY_PATH, "w")
             try:
                 keyFile.write(inputKey)
                 print("Key successfully written to key.txt file!")

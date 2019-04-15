@@ -1,4 +1,4 @@
-from slimeshot import *
+from src.slimeshot import *
 
 
 def main():
@@ -9,9 +9,9 @@ def main():
     thisDir = os.path.dirname(os.path.realpath(__file__))
 
     # Key reset (-r)
-    if args.reset and os.path.exists("key.txt"):
+    if args.reset and os.path.exists(KEY_PATH):
         if ss.promptYesOrNo("Do you really want to reset your key?"):
-            os.remove("key.txt")
+            os.remove(KEY_PATH)
         else:
             print("Key was not deleted.")
 
@@ -34,9 +34,9 @@ def main():
 
         if response["status"] == 0:  # Server returns successful status
             ss.clipboard(response["url"])
-            ss.notify("Screenshot successful!", response["url"], thisDir + "/temp.png")
+            ss.notify("Screenshot successful!", response["url"], os.path.abspath(IMG_PATH))
             if not args.silent:
-                playsound("success.wav")
+                playsound(SOUND_PATH)
         # Server denies screenshot, show error
         else:
             ss.showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])

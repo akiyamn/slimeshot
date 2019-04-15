@@ -10,7 +10,7 @@ Windows exclusive programs such as ShareX and puush.
 ## Basic Usage
 Given execution permissions, simply:
 
-`./slimeshot`
+`./src/main.py`
 
 A file must be created in the main directory, called `key.txt`.
 This file must include only one line, which is a valid keyFile
