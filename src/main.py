@@ -1,49 +1,89 @@
 from src.slimeshot import *
+import src.io as io
+from playsound import playsound
+import os
+import json
 
 
-def main():
-    ss = Slimeshot()
+class SSDriver:
 
-    message = ""
-    httpstat = 0
-    thisDir = os.path.dirname(os.path.realpath(__file__))
+    def __init__(self):
+        self.ss = Slimeshot()
 
-    # Key reset (-r)
-    if args.reset and os.path.exists(KEY_PATH):
-        if ss.promptYesOrNo("Do you really want to reset your key?"):
-            os.remove(KEY_PATH)
+    def drive(self):
+        if args.reset:
+            self.resetKey()
+
+        # Get key and send the request off to servers
+        key = self.getKey()
+        if self.ss.clip():
+            if not args.dryrun:
+                req = self.ss.post(key)
+                self.handlePostReq(req)
+            else:
+                io.notify("Slimeshot", "Dry Run Complete", os.path.abspath(IMG_PATH))
+                self.play(SOUND_PATH)
+
+    def resetKey(self):
+        # Key reset (-r)
+        if os.path.exists(KEY_PATH):
+            if io.promptYesOrNo("Do you really want to reset your key?"):
+                os.remove(KEY_PATH)
+            else:
+                print("Key was not deleted.")
         else:
-            print("Key was not deleted.")
+            print("Key not found, not deleted.")
 
-    # Get key and send the request off to servers
-    key = ss.getKey()
-    if ss.clip():
-        if not args.dryrun:
-            req = ss.post(key)
-            message = req.text
-            httpstat = req.status_code
+    def getKey(self):
+        thisDir = os.path.dirname(os.path.realpath(__file__))
+        os.chdir(thisDir)
+        if os.path.exists(KEY_PATH):  # Reads key from key.txt if no errors
+            try:
+                keyFile = open(KEY_PATH, "rb")
+                key = keyFile.read().decode().replace("\n", "")
+                keyFile.close()
+                return key
+            except IOError as e:
+                io.showError("IOError: " + e)
+        else:  # Ask the user for a key and create new file if key.txt doesn't exist
+            return self.askForKey()
+
+    def handlePostReq(self, req):
+        message = req.text
+        httpstat = req.status_code
+        response = {}
+        # If a valid HTTP response is returned (200)
+        if httpstat == 200:
+            try:
+                response = json.loads(message)
+            except json.decoder.JSONDecodeError:
+                io.showError("Invalid JSON response was received back:\n" + message)
+
+            if response["status"] == 0:  # Server returns successful status
+                self.ss.clipboard(response["url"])
+                io.notify("Screenshot successful!", response["url"], os.path.abspath(IMG_PATH), args.quiet)
+                self.play(SOUND_PATH)
+            # Server denies screenshot, show error
+            else:
+                io.showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
+        # If an error HTTP is returned
         else:
-            message = "DRY RUN"
+            io.showError("Server Returned HTTP Error Code: " + str(httpstat))
 
-    # If a valid HTTP response is returned (200)
-    if httpstat == 200:
+    def askForKey(self):
+        inputKey = input("A key.txt file was not found, so please enter your key: ")
+        keyFile = open(KEY_PATH, "w")
         try:
-            response = json.loads(message)
-        except json.decoder.JSONDecodeError:
-            ss.showError("Invalid JSON response was received back:\n" + message)
+            keyFile.write(inputKey)
+            print("Key successfully written to key.txt file!")
+            keyFile.close()
+            return inputKey
+        except IOError as e:
+            io.showError("IOError: " + e)
 
-        if response["status"] == 0:  # Server returns successful status
-            ss.clipboard(response["url"])
-            ss.notify("Screenshot successful!", response["url"], os.path.abspath(IMG_PATH))
-            if not args.silent:
-                playsound(SOUND_PATH)
-        # Server denies screenshot, show error
-        else:
-            ss.showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
-    # If an error HTTP is returned
-    else:
-        ss.showError("Server Returned HTTP Error Code: " + str(httpstat))
-
+    def play(self, sound):
+        if not args.silent:
+            playsound(sound)
 
 if __name__ == "__main__":
-    main()
+    SSDriver().drive()
