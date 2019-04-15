@@ -2,7 +2,7 @@ from playsound import playsound
 import os
 import json
 
-import src.slimeshot as ss
+from src.slimeshot import Slimeshot
 import src.io as io
 from src.config import *
 
@@ -10,7 +10,7 @@ from src.config import *
 class SSDriver:
 
     def __init__(self):
-        self.ss = ss.Slimeshot()
+        self.ss = Slimeshot()
 
     def drive(self):
         if args.reset:
