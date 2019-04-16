@@ -1,9 +1,12 @@
 import argparse
+import os.path
 import configparser as cp
+
+os.chdir(os.path.abspath(os.path.dirname(__file__)))
 
 # Static globals
 __version__ = "0.4.0"
-CONFIG_PATH = "config.ini"
+CONFIG_PATH = "../config.ini"
 
 # Read from config file
 config = cp.ConfigParser()

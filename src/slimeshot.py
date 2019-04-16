@@ -1,9 +1,7 @@
-#!/usr/bin/python3
-
 import subprocess
 import requests
 import sys
-from src.config import *
+from config import *
 
 
 class Slimeshot:

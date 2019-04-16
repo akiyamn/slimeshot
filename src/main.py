@@ -1,10 +1,12 @@
+#!/usr/bin/python3
+
 from playsound import playsound
 import os
 import json
 
-from src.slimeshot import Slimeshot
-import src.io as io
-from src.config import *
+from slimeshot import Slimeshot
+import ssio as io
+from config import *
 
 
 class SSDriver:
