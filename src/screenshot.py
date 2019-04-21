@@ -4,10 +4,10 @@ import sys
 from config import *
 
 
-class Slimeshot:
+class Screenshot:
     # Sends 'data' to the clipboard
     def clipboard(self, data):
-        p = subprocess.Popen(['xclip', '-selection', 'clipboard'], stdin=subprocess.PIPE)
+        p = subprocess.Popen(["xclip", "-selection", "clipboard"], stdin=subprocess.PIPE)
         p.stdin.write(data.encode())
         p.stdin.close()
 
@@ -18,13 +18,13 @@ class Slimeshot:
         maim.wait()
         out, err = maim.communicate()
         err = err.decode()
-        if err == "":
-            return True
-        elif "right-click" in err:
+        if "right-click" in err:
             sys.exit(0)
         else:
-            self.showError('Failed to clip the specified region.\n' + err)
-        return False
+            return err
+
+    def imageToClipboard(self, imagePath):
+        subprocess.Popen(["xclip", "-selection", "clipboard", "-t", "image/png", "-i", imagePath])
 
     # Sends a POST request to the screenshot server including the screenshot and the key
     ## Returns text sent back from the server

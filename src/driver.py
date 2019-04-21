@@ -4,7 +4,7 @@ from playsound import playsound
 import os
 import json
 
-from slimeshot import Slimeshot
+from screenshot import Screenshot
 import ssio as io
 from config import *
 
@@ -12,7 +12,7 @@ from config import *
 class SSDriver:
 
     def __init__(self):
-        self.ss = Slimeshot()
+        self.ss = Screenshot()
 
     def drive(self):
         if args.reset:
@@ -20,13 +20,19 @@ class SSDriver:
 
         # Get key and send the request off to servers
         key = self.getKey()
-        if self.ss.clip():
-            if not args.dryrun:
+        clipErr = self.ss.clip()
+        if clipErr == "":
+            if args.clipboard:
+                self.ss.imageToClipboard(os.path.abspath(IMG_PATH))
+                io.notify("Screenshot successful!", "Image copied to clipboard.", os.path.abspath(IMG_PATH))
+            elif not args.dryrun:
                 req = self.ss.post(key)
                 self.handlePostReq(req)
             else:
                 io.notify("Slimeshot", "Dry Run Complete", os.path.abspath(IMG_PATH))
                 self.play(SOUND_PATH)
+        else:
+            io.showError('Failed to clip the specified region.\n' + clipErr)
 
     def resetKey(self):
         # Key reset (-r)
@@ -88,7 +94,3 @@ class SSDriver:
     def play(self, sound):
         if not args.silent:
             playsound(sound)
-
-
-if __name__ == "__main__":
-    SSDriver().drive()
