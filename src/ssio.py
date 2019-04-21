@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from playsound import playsound
 
 
 def promptYesOrNo(prompt):
@@ -20,3 +21,8 @@ def showError(message):
     notify("Slimeshot Error!", message, error=True)
     print("[ERROR]\t" + message)
     sys.exit(1)
+
+
+def play(sound, silent=False):
+    if not silent:
+        playsound(sound)

@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from playsound import playsound
 import os
 import json
 
@@ -23,14 +22,15 @@ class SSDriver:
         clipErr = self.ss.clip()
         if clipErr == "":
             if args.clipboard:
-                self.ss.imageToClipboard(os.path.abspath(IMG_PATH))
-                io.notify("Screenshot successful!", "Image copied to clipboard.", os.path.abspath(IMG_PATH))
+                self.ss.imageToClipboard(IMG_PATH)
+                io.notify("Screenshot successful!", "Image copied to clipboard.", IMG_PATH)
+                io.play(SOUND_PATH)
             elif not args.dryrun:
                 req = self.ss.post(key)
                 self.handlePostReq(req)
             else:
-                io.notify("Slimeshot", "Dry Run Complete", os.path.abspath(IMG_PATH))
-                self.play(SOUND_PATH)
+                io.notify("Slimeshot", "Dry Run Complete", IMG_PATH)
+                io.play(SOUND_PATH)
         else:
             io.showError('Failed to clip the specified region.\n' + clipErr)
 
@@ -45,8 +45,6 @@ class SSDriver:
             print("Key not found, not deleted.")
 
     def getKey(self):
-        thisDir = os.path.dirname(os.path.realpath(__file__))
-        os.chdir(thisDir)
         if os.path.exists(KEY_PATH):  # Reads key from key.txt if no errors
             try:
                 keyFile = open(KEY_PATH, "rb")
@@ -72,7 +70,7 @@ class SSDriver:
             if response["status"] == 0:  # Server returns successful status
                 self.ss.clipboard(response["url"])
                 io.notify("Screenshot successful!", response["url"], os.path.abspath(IMG_PATH), args.quiet)
-                self.play(SOUND_PATH)
+                io.play(SOUND_PATH)
             # Server denies screenshot, show error
             else:
                 io.showError("Error Code: " + str(response["status"]) + "\n" + response["verbose"])
@@ -90,7 +88,3 @@ class SSDriver:
             return inputKey
         except IOError as e:
             io.showError("IOError: " + e)
-
-    def play(self, sound):
-        if not args.silent:
-            playsound(sound)

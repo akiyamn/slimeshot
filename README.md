@@ -8,9 +8,9 @@ Windows exclusive programs such as ShareX and puush.
 
 
 ## Basic Usage
-Given execution permissions, simply:
+Given execution permissions, in the project's root directory execute:
 
-`./src/main.py`
+`./run.py`
 
 A file must be created in the main directory, called `key.txt`.
 This file must include only one line, which is a valid keyFile
@@ -24,11 +24,11 @@ On the first launch, slimeshot will create a file named `key.txt` if it doesn't 
 -   python3
 -   maim
 -   xclip
--   python3-pip (to install Python libs)
+-   python3-pip (to install Python libraries)
 
 ### Python Libraries
 -   request
--   playsound
+-   playsound (optional)
 
 
 ## Installation
