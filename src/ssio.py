@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import os
 from playsound import playsound
 
 
@@ -11,7 +12,7 @@ def promptYesOrNo(prompt):
 # Sends a GNU/Linux notification via 'notify-send'
 def notify(title, text="", icon="", quiet=False, error=False):
     if not quiet:
-        subprocess.Popen(["notify-send", "-i", icon, title, text])
+        subprocess.Popen(["notify-send", "-i", os.path.abspath(icon), title, text])
         if not error:
             print("[NOTIFY]\t" + title + " - " + text)
 
