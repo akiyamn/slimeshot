@@ -15,7 +15,6 @@ class Screenshot:
     defined in config.ini. This class does not interface with the user except quitting if a right click is detected.
     """
 
-    # Sends 'data' to the clipboard
     def clipboard(self, data):
         """
         Sends string data to the clipboard via stdin through xclip.
@@ -25,8 +24,6 @@ class Screenshot:
         p.stdin.write(data.encode())
         p.stdin.close()
 
-    # Opens maim and allows the user to make a screenshot
-    ## Returns whether the screenshot was successful
     def clip(self):
         """
         Takes a screenshot using the selection interface of maim. Saves it to the image path
