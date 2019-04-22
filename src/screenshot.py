@@ -1,7 +1,7 @@
 import subprocess
 import requests
 import sys
-from config import *
+from .config import *
 
 
 class Screenshot:

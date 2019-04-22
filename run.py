@@ -1,4 +1,6 @@
-from src.driver import *
+#!/usr/bin/env python3
+
+import src.driver
 
 if __name__ == "__main__":
-    SSDriver().drive()
+    src.driver.SSDriver().drive()

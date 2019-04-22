@@ -1,11 +1,9 @@
-#!/usr/bin/python3
-
 import os
 import json
 
-from screenshot import Screenshot
-import ssio as io
-from config import *
+from .screenshot import Screenshot
+import src.ssio as io
+from .config import *
 
 
 class SSDriver:
