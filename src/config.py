@@ -5,7 +5,7 @@ import configparser as cp
 os.chdir(os.path.abspath(os.path.dirname(__file__)))
 
 # Static globals
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 CONFIG_PATH = "../config.ini"
 
 # Read from config file

@@ -34,10 +34,9 @@ class SSDriver:
 
         # Get key and send the request off to the server
         key = self.getKey()
-        clipErr = self.ss.clip()
+        error = self.ss.clip()
 
-        # If no error was returned by the server
-        if clipErr == "":
+        if not error:
 
             if args.clipboard:  # Just save to clipboard (-c)
                 self.ss.imageToClipboard(IMG_PATH)

@@ -7,6 +7,8 @@ from .config import *
 Container module for the Screenshot class
 """
 
+IGNORABLE_ERRORS = ["", "Failed to detect a compositor, OpenGL hardware-accelleration disabled..."]
+
 class Screenshot:
     """
     Sends image data various places, dictated by its driver class: SSDriver.
@@ -38,7 +40,7 @@ class Screenshot:
         if "right-click" in err:
             sys.exit(0)  # Exit on right click
         else:
-            return err
+            return err in IGNORABLE_ERRORS
 
     def imageToClipboard(self, imagePath):
         """
