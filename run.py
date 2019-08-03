@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-import src.driver
+from src.driver import *
+
+
+
 
 """
 The main file that is intended to start the program.
 """
 
 if __name__ == "__main__":
-    src.driver.SSDriver().drive()
+    SSDriver().drive()

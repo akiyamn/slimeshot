@@ -1,7 +1,7 @@
 import os
 import json
 
-from .screenshot import Screenshot
+from .screenshot import *
 import src.ssio as io
 from .config import *
 
@@ -36,7 +36,7 @@ class SSDriver:
         key = self.getKey()
         error = self.ss.clip()
 
-        if not error:
+        if error == "":
 
             if args.clipboard:  # Just save to clipboard (-c)
                 self.ss.imageToClipboard(IMG_PATH)
@@ -50,7 +50,7 @@ class SSDriver:
                 io.play(SOUND_PATH)
 
         else:  # Display the error given by maim
-            io.showError('Failed to clip the specified region.\n' + clipErr)
+            io.showError('Failed to clip the specified region.\n' + error)
 
     def resetKey(self):
         """
