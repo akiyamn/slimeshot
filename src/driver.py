@@ -106,7 +106,7 @@ class SSDriver:
             if response["status"] == 0:
                 self.ss.clipboard(response["url"])
                 io.notify("Screenshot successful!", response["url"], IMG_PATH, args.quiet)
-                io.play(SOUND_PATH)
+                io.play(SOUND_PATH, args.silent)
 
             # Server denies screenshot, show error
             else:
