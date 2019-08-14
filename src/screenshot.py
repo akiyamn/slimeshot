@@ -49,6 +49,11 @@ class Screenshot:
                 return ""
 
     def saveLocally(self):
+        """
+        Copies the image currently in the temporary location to a permanent location
+        specified in the config.ini file
+        :return: a string of any error that occured. ("" means no error)
+        """
         fileName = f"{LOCAL_IMG_PATH}/{str(int(time.time()))}.png"
         try:
             shutil.copy2(IMG_PATH, fileName)
