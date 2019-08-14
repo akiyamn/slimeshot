@@ -1,6 +1,9 @@
 import subprocess
 import requests
 import sys
+import shutil
+import time
+import os
 from .config import *
 
 """
@@ -44,6 +47,15 @@ class Screenshot:
                 return err
             else:
                 return ""
+
+    def saveLocally(self):
+        fileName = f"{LOCAL_IMG_PATH}/{str(int(time.time()))}.png"
+        try:
+            shutil.copy2(IMG_PATH, fileName)
+        except IOError as ioe:
+            return str(ioe)
+        self.clipboard(os.path.abspath(fileName))
+        return ""
 
     def imageToClipboard(self, imagePath):
         """

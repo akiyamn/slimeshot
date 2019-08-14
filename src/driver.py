@@ -42,6 +42,9 @@ class SSDriver:
                 self.ss.imageToClipboard(IMG_PATH)
                 io.notify("Screenshot successful!", "Image copied to clipboard.", IMG_PATH)
                 io.play(SOUND_PATH)
+            elif args.local:
+                saveError = self.ss.saveLocally()
+                io.notify("Screenshot successful!", "Image saved locally.", IMG_PATH)
             elif not args.dryrun:  # Default behaviour, sends a normal screenshot off to the server (no args)
                 req = self.ss.post(key)
                 self.handlePostReq(req)

@@ -5,7 +5,7 @@ import configparser as cp
 os.chdir(os.path.abspath(os.path.dirname(__file__)))
 
 # Static globals
-__version__ = "0.5.2"
+__version__ = "0.6.0"
 CONFIG_PATH = "../config.ini"
 
 # Read from config file
@@ -16,11 +16,14 @@ URL = config["URLS"]["img_url"]
 KEY_PATH = config["PATHS"]["key"]
 SOUND_PATH = config["PATHS"]["sound"]
 IMG_PATH = config["PATHS"]["temp_img"]
+LOCAL_IMG_PATH = config["PATHS"]["local_img_dir"]
 
 # Argument parsing
 parser = argparse.ArgumentParser(description="A simple Python-based screenshot program for slimecorp.biz/i.")
 parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
 parser.add_argument("-c", "--clipboard", help="sends the image itself to the clipboard rather than uploading it",
+                    action='store_true')
+parser.add_argument("-l", "--local", help="saves the image to a file rather than uploading it",
                     action='store_true')
 parser.add_argument("-q", "--quiet", help="mutes all sound, text and notification output", action='store_true')
 parser.add_argument("-r", "--reset", help="resets the key stored in key.txt to be empty", action='store_true')

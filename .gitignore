@@ -4,3 +4,4 @@ temp.png
 !.gitignore
 key.txt
 src/__pycache__
+img/*
