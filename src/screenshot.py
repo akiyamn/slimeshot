@@ -10,7 +10,7 @@ from .config import *
 Container module for the Screenshot class
 """
 
-IGNORABLE_ERRORS = ["Failed to detect a compositor, OpenGL hardware-accelleration disabled..."]
+IGNORABLE_ERRORS = ["Failed to detect a compositor, OpenGL hardware-accelleration disabled...\n"]
 
 class Screenshot:
     """
@@ -43,10 +43,10 @@ class Screenshot:
         if "right-click" in err:
             sys.exit(0)  # Exit on right click
         else:
-            if err not in IGNORABLE_ERRORS:
-                return err
-            else:
+            if err in IGNORABLE_ERRORS:
                 return ""
+            else:
+                return err
 
     def saveLocally(self):
         """
